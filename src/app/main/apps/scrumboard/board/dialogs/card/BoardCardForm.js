@@ -68,6 +68,11 @@ function BoardCardForm(props)
         if (dueDate && isNaN(dueDate.valueOf())) {
             return;
         }
+
+        const due = dueDate ? dueDate.toISOString().slice(0, 10) : ""
+        const e = { target: { name: 'due', type: 'date', value: due } };
+        handleChange(e);
+
         updateCard(cardForm);
     }
 
