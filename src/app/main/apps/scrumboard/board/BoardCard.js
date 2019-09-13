@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, Typography, Avatar, Icon, Tooltip} from '@material-ui/core';
+import {Card, Typography, Avatar, Icon, Tooltip, Box} from '@material-ui/core';
 import {Draggable} from 'react-beautiful-dnd';
 import clsx from 'clsx';
 import moment from 'moment';
@@ -7,6 +7,8 @@ import _ from '@lodash';
 import * as Actions from '../store/actions';
 import {makeStyles} from '@material-ui/styles';
 import {useDispatch, useSelector} from 'react-redux';
+import { getUserId } from 'app/auth';
+
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -27,6 +29,7 @@ function BoardCard(props)
     const checkItemsChecked = getCheckItemsChecked(card);
     const checkItems = getCheckItems(card);
     const commentsCount = getCommentsCount(card);
+    const locked = card.lock && card.lock._id && card.lock._id !== getUserId();
 
     function handleCardClick(ev, card)
     {
@@ -68,9 +71,15 @@ function BoardCard(props)
                         elevation={snapshot.isDragging ? 3 : 0}
                         onClick={(ev) => handleCardClick(ev, card)}
                     >
-                        <Typography className="font-600 p-16 capitalize">
-                            {card.name}
-                        </Typography>
+                        <Box display="flex" className="p-16 justify-between items-center">
+                            <Typography className="font-600 capitalize">
+                                {card.name}
+                            </Typography>
+
+                            {locked && (
+                                <Icon color='disabled'>lock</Icon>
+                            )}
+                        </Box>
 
                         {board.settings.cardCoverImages && !!card.idAttachmentCover && (
                             <img

@@ -36,6 +36,9 @@ import CardChecklist from './checklist/CardChecklist';
 import CardActivity from './activity/CardActivity';
 import CardComment from './comment/CardComment';
 
+import { getUserId } from 'app/auth';
+
+
 
 const useStyles = makeStyles(theme => ({
     saveButton: {
@@ -54,6 +57,7 @@ function BoardCardForm(props)
     const dispatch = useDispatch();
     const card = useSelector(({scrumboardApp}) => scrumboardApp.card.data);
     const board = useSelector(({scrumboardApp}) => scrumboardApp.board);
+    const locked = card && card.lock && card.lock._id && card.lock._id !== getUserId();
 
     const {form: cardForm, handleChange, setForm, setInForm} = useForm(card);
     const updateCard = useDebounce(newCard => {
@@ -177,57 +181,60 @@ function BoardCardForm(props)
         <>
             <DialogTitle component="div" className="p-0">
                 <AppBar position="static" elevation={1}>
-                    <Toolbar className="flex w-full overflow-x-auto px-8 sm:px-16">
-                        <div className="flex flex-1 items-center">
-                            <Button
-                                variant='contained'
-                                onClick={handleSaveClick}
-                                className={classes.saveButton}    
-                            >
-                                Save
-                            </Button>
-                            <DueMenu
-                                onDueChange={handleChange}
-                                onRemoveDue={removeDue}
-                                due={dueDate}
-                            />
-
-                            {board.labels && board.labels.length > 0 && (
-                                <LabelsMenu
-                                    onToggleLabel={toggleLabel}
-                                    labels={board.labels}
-                                    idLabels={cardForm.idLabels}
+                    <Toolbar className="flex w-full overflow-x-auto px-8 sm:px-16 justify-between">
+                        {locked ? <Icon>lock</Icon>
+                        : card === null ? <div></div> : (
+                            <div className="flex flex-1 items-center">
+                                <Button
+                                    variant='contained'
+                                    onClick={handleSaveClick}
+                                    className={classes.saveButton}    
+                                >
+                                    Save
+                                </Button>
+                                <DueMenu
+                                    onDueChange={handleChange}
+                                    onRemoveDue={removeDue}
+                                    due={dueDate}
                                 />
-                            )}
 
-                            <MembersMenu
-                                onToggleMember={toggleMember}
-                                members={board.members}
-                                idMembers={cardForm.idMembers}
-                            />
-    
-                            <OrderListMenu
-                                orderlist={cardForm.orderlists}
-                                onToggleOrderlist={toggleOrderList}
-                            />
+                                {board.labels && board.labels.length > 0 && (
+                                    <LabelsMenu
+                                        onToggleLabel={toggleLabel}
+                                        labels={board.labels}
+                                        idLabels={cardForm.idLabels}
+                                    />
+                                )}
 
-                            <AttachmentMenu
-                                cardId={cardForm.id}
-                                onUpload={handleAttachUpload}
-                            />
+                                <MembersMenu
+                                    onToggleMember={toggleMember}
+                                    members={board.members}
+                                    idMembers={cardForm.idMembers}
+                                />
+        
+                                <OrderListMenu
+                                    orderlist={cardForm.orderlists}
+                                    onToggleOrderlist={toggleOrderList}
+                                />
 
-                            <CheckListMenu
-                                checklistAdded={!!cardForm.checklists}
-                                onSetCheckList={setCheckList}
-                                onRemoveCheckList={removeCheckList}
-                            />
+                                <AttachmentMenu
+                                    cardId={cardForm.id}
+                                    onUpload={handleAttachUpload}
+                                />
 
-                            <OptionsMenu
-                                onRemoveCard={() => dispatch(Actions.removeCard(cardForm.id))}
-                            />
+                                <CheckListMenu
+                                    checklistAdded={!!cardForm.checklists}
+                                    onSetCheckList={setCheckList}
+                                    onRemoveCheckList={removeCheckList}
+                                />
 
-                        </div>
-                        <IconButton color="inherit" onClick={ev => dispatch(Actions.closeCardDialog())}>
+                                <OptionsMenu
+                                    onRemoveCard={() => dispatch(Actions.removeCard(cardForm.id))}
+                                />
+
+                            </div>
+                        )}
+                        <IconButton color="inherit" onClick={ev => dispatch(Actions.closeCardDialog(card, locked))}>
                             <Icon>close</Icon>
                         </IconButton>
                     </Toolbar>
