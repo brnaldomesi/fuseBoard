@@ -26,11 +26,15 @@ export const REMOVE_LIST = '[SCRUMBOARD APP] REMOVE LIST';
 export function getBoard(params)
 {
     const request = axios.post('/api/board/get', params);
+    const labelRequest = axios.get('/api/board/labels');
 
     return (dispatch) =>
-        request.then(
-            (response) => {
+        Promise.all([request, labelRequest])
+        .then(
+            ([response, labelResponse]) => {
                 const board = _.get(response, 'data.boards[0]');
+                const labels = _.get(labelResponse, 'data.labels');
+
                 const fields = ['idMembers', 'idLabels', 'attachments', 'activities', 'idAttachmentCover'];
                 
                 board.cards.forEach(card => {
@@ -43,6 +47,8 @@ export function getBoard(params)
                     card['idAttachmentCover'] = card.detail['idAttachmentCover'];
                 });
 
+                board.labels = labels;
+                
                 if (board) {
                     dispatch({
                         type   : GET_BOARD,

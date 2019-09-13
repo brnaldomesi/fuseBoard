@@ -5,6 +5,8 @@ import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
+import LabelIcon from '@material-ui/icons/Label';
+
 import ToolbarMenu from './ToolbarMenu';
 
 function LabelsMenu(props)
@@ -29,6 +31,9 @@ function LabelsMenu(props)
             <ToolbarMenu state={anchorEl} onClose={handleMenuClose}>
                 <div className="">
                     {props.labels && props.labels.map(label => {
+                        const classes = label.class.split(' ')
+                        const color = classes.filter(c => c.slice(0, 3).toLowerCase() === 'bg-')[0].replace('bg-', '')
+
                         return (
                             <MenuItem
                                 className="px-8"
@@ -42,7 +47,7 @@ function LabelsMenu(props)
                                     {label.name}
                                 </ListItemText>
                                 <ListItemIcon className="min-w-40 ml-5">
-                                    <Icon>label</Icon>
+                                    <LabelIcon style={{ color }}/>
                                 </ListItemIcon>
                             </MenuItem>
                         );
