@@ -6,18 +6,50 @@ export const CLOSE_CARD_DIALOG = '[SCRUMBOARD APP] CLOSE CARD DIALOG';
 export const UPDATE_CARD = '[SCRUMBOARD APP] UPDATE CARD';
 export const REMOVE_CARD = '[SCRUMBOARD APP] REMOVE CARD';
 
+
+function lockRequest(lock, card, dispatch)
+{
+    const request = axios.post('/api/card/lock', {
+        id_card: card.id,
+        locked: lock
+    });
+
+    return request.then(
+        response => ({ ...card, lock: response.data.locked ? { ...card.lock, _id: response.data.locked } : undefined }),
+        error => ({ ...card, lock: { ...card.lock, _id: error.response.data.locked } })
+    ).then(newCard => {
+        dispatch({
+            type: UPDATE_CARD,
+            payload: newCard
+        })
+        return newCard
+    })
+}
+
 export function openCardDialog(data)
 {
-    return {
-        type   : OPEN_CARD_DIALOG,
-        payload: data
+    return dispatch => {
+        lockRequest(true, data, dispatch).then(card => dispatch({
+            type: OPEN_CARD_DIALOG,
+            payload: card
+        }));
     }
 }
 
-export function closeCardDialog()
+export function closeCardDialog(data, locked)
 {
-    return {
-        type: CLOSE_CARD_DIALOG
+    if (locked) {
+        return {
+            type: CLOSE_CARD_DIALOG,
+        }
+    }
+    
+    return dispatch => {
+        dispatch({
+            type: CLOSE_CARD_DIALOG
+        });
+
+        lockRequest(false, data, dispatch);
     }
 }
 
@@ -59,10 +91,12 @@ export function updateCard(card)
                     }
                 }));
 
+                lockRequest(false, card, dispatch);
+
                 return dispatch({
                     type   : UPDATE_CARD,
                     payload: card
-                })
+                });
             });
     }
 }
