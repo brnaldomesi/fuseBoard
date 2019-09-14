@@ -182,8 +182,18 @@ function BoardCardForm(props)
             <DialogTitle component="div" className="p-0">
                 <AppBar position="static" elevation={1}>
                     <Toolbar className="flex w-full overflow-x-auto px-8 sm:px-16 justify-between">
-                        {locked ? <Icon>lock</Icon>
-                        : card === null ? <div></div> : (
+                        {locked ? (
+                            <div className="flex flex-1 items-center">
+                                <Button
+                                    variant='contained'
+                                    onClick={handleSaveClick}
+                                    className={classes.saveButton}    
+                                >
+                                    Save
+                                </Button>
+                                <Icon>lock</Icon>
+                            </div>
+                        ) : card === null ? <div></div> : (
                             <div className="flex flex-1 items-center">
                                 <Button
                                     variant='contained'
