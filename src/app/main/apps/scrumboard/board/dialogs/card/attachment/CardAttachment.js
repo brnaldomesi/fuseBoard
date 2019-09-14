@@ -16,6 +16,7 @@ const useStyles = makeStyles(theme => ({
 
 function CardAttachment(props)
 {
+    const { disabled } = props;
     const [anchorEl, setAnchorEl] = useState(null);
     const classes = useStyles();
 
@@ -53,6 +54,7 @@ function CardAttachment(props)
                         aria-owns={anchorEl ? 'actions-menu' : null}
                         aria-haspopup="true"
                         onClick={handleMenuOpen}
+                        disabled={disabled}
                         variant="outlined"
                         size="small"
                     >
@@ -115,6 +117,7 @@ function CardAttachment(props)
                         aria-owns={anchorEl ? 'actions-menu' : null}
                         aria-haspopup="true"
                         onClick={handleMenuOpen}
+                        disabled={disabled}
                         variant="outlined"
                         size="small"
                     >

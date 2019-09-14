@@ -5,6 +5,7 @@ import ChecklistModel from 'app/main/apps/scrumboard/model/ChecklistModel';
 
 function CardAddChecklistItem(props)
 {
+    const { disabled } = props
     const {form, handleChange, resetForm} = useForm(
         {
             name: ""
@@ -40,6 +41,7 @@ function CardAddChecklistItem(props)
                     value={form.name}
                     onChange={handleChange}
                     variant="outlined"
+                    disabled={disabled}
                     placeholder="Add an item"
                 />
                 <Fab
@@ -48,7 +50,7 @@ function CardAddChecklistItem(props)
                     size="small"
                     color="secondary"
                     type="submit"
-                    disabled={isFormInValid()}
+                    disabled={disabled || isFormInValid()}
                 >
                     <Icon>add</Icon>
                 </Fab>

@@ -7,7 +7,7 @@ import {useForm, useUpdateEffect} from '@fuse/hooks';
 
 function CardChecklist(props)
 {
-    const {onCheckListChange, checklist} = props;
+    const {onCheckListChange, checklist, disabled} = props;
     const [anchorEl, setAnchorEl] = useState(null);
     const {form, setForm, setInForm} = useForm(checklist);
 
@@ -64,6 +64,7 @@ function CardChecklist(props)
                         onClick={handleMenuOpen}
                         variant="outlined"
                         size="small"
+                        disabled={disabled}
                     >
                         <Icon className="text-20">more_vert</Icon>
                     </IconButton>
@@ -107,11 +108,13 @@ function CardChecklist(props)
                             item={checkItem}
                             key={checkItem.id}
                             index={index}
+                            disabled={disabled}
                             onListItemChange={handleListItemChange}
                             onListItemRemove={() => handleListItemRemove(checkItem.id)}
                         />
                     ))}
                     <CardAddChecklistItem
+                        disabled={disabled}
                         onListItemAdd={handleListItemAdd}
                     />
                 </List>
