@@ -267,6 +267,7 @@ function BoardCardForm(props)
                             invalidDateMessage={<></>}
                             className={classes.datePicker}
                             value={dueDate}
+                            disabled={locked}
                             showTodayButton
                             format="dd/MM/yyyy"
                         />
@@ -282,6 +283,7 @@ function BoardCardForm(props)
                         onChange={handleChange}
                         variant="outlined"
                         fullWidth
+                        disabled={locked}
                         required
                         // InputProps={{
                         //     endAdornment: (
@@ -303,6 +305,7 @@ function BoardCardForm(props)
                         rows="4"
                         value={cardForm.description}
                         onChange={handleChange}
+                        disabled={locked}
                         variant="outlined"
                         fullWidth
                     />
@@ -330,16 +333,15 @@ function BoardCardForm(props)
                                 onChange={(value) => chipChange('idLabels', value)}
                                 placeholder="Select multiple Labels"
                                 isMulti
+                                isDisabled={locked}
                                 textFieldProps={{
                                     variant: "outlined"
                                 }}
-                                options={board.labels.map((label) => (
-                                    {
-                                        value: label.id,
-                                        label: label.name,
-                                        class: label.class
-                                    }
-                                ))}
+                                options={board.labels.map((label) => ({
+                                    value: label.id,
+                                    label: label.name,
+                                    class: label.class
+                                }))}
                                 onCreateOption={(name) => {
                                     // Create New Label
                                     const newLabel = new LabelModel({name});
@@ -376,15 +378,19 @@ function BoardCardForm(props)
                                 onChange={(value) => chipChange('idMembers', value)}
                                 placeholder="Select multiple Members"
                                 isMulti
+                                isDisabled={locked}
                                 textFieldProps={{
                                     variant: "outlined"
                                 }}
-                                options={board.members.map((member) => (
-                                    {
-                                        value: member.id,
-                                        label: (<span className="flex items-center"><Avatar className="w-32 h-32 mr-8" src={member.avatar}/>{member.name}</span>)
-                                    }
-                                ))}
+                                options={board.members.map((member) => ({
+                                    value: member.id,
+                                    label: (
+                                        <span className="flex items-center">
+                                            <Avatar className="w-32 h-32 mr-8" src={member.avatar}/>
+                                            {member.name}
+                                        </span>
+                                    )
+                                }))}
                                 variant="fixed"
                             />
                         </div>
@@ -393,6 +399,7 @@ function BoardCardForm(props)
 
                 {!!cardForm.orderlists && (
                     <CardOrderlist
+                        disabled={locked}
                         orderlist={cardForm.orderlists}
                         onOrderListChange={handleOrderListChange}
                     />
@@ -408,6 +415,7 @@ function BoardCardForm(props)
                             {cardForm.attachments.map(item => (
                                 <CardAttachment
                                     item={item}
+                                    disabled={locked}
                                     cover={cardForm.idAttachmentCover}
                                     makeCover={makeCover}
                                     removeCover={removeCover}
@@ -421,6 +429,7 @@ function BoardCardForm(props)
 
                 {!!cardForm.checklists && (
                     <CardChecklist
+                        disabled={locked}
                         checklist={cardForm.checklists}
                         onCheckListChange={handleCheckListChange}
                         onRemoveCheckList={removeCheckList}

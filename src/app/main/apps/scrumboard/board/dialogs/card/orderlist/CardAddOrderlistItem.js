@@ -7,6 +7,8 @@ import OrderlistModel from 'app/main/apps/scrumboard/model/OrderlistModel';
 
 function CardAddOrderlistItem(props)
 {
+    const { disabled } = props
+
     const {form, handleChange, handleCustomChange, resetForm} = useForm(
         {
             code: '',
@@ -48,6 +50,7 @@ function CardAddOrderlistItem(props)
                     value={form.code}
                     onKeyUp={e => e.which === 13 && handleSubmit()}
                     onChange={handleChange}
+                    disabled={disabled}
                     variant="outlined"
                 />
             </td>
@@ -59,6 +62,7 @@ function CardAddOrderlistItem(props)
                     value={form.name}
                     onKeyUp={e => e.which === 13 && handleSubmit()}
                     onChange={handleChange}
+                    disabled={disabled}
                     variant="outlined"
                 />
             </td>
@@ -71,6 +75,7 @@ function CardAddOrderlistItem(props)
                     onChange={handleCustomChange(e => parseInt(e.target.value))}
                     onKeyUp={e => e.which === 13 && handleSubmit()}
                     inputProps={{type: 'number', min: 0}}
+                    disabled={disabled}
                     variant="outlined"
                 />
             </td>
@@ -83,6 +88,7 @@ function CardAddOrderlistItem(props)
                     onChange={handleChange}
                     onKeyUp={e => e.which === 13 && handleSubmit()}
                     inputProps={{type: 'number', min: 0}}
+                    disabled={disabled}
                     variant="outlined"
                 />
             </td>
@@ -92,6 +98,7 @@ function CardAddOrderlistItem(props)
                     name="tot"
                     margin="dense"
                     value={Math.round(form.price * form.qty * 100) / 100}
+                    disabled={disabled}
                     variant="outlined"
                 />
             </td>
@@ -101,7 +108,7 @@ function CardAddOrderlistItem(props)
                     size="small"
                     color="secondary"
                     onClick={handleSubmit}
-                    disabled={isFormInValid()}
+                    disabled={disabled || isFormInValid()}
                 >
                     <Icon>add</Icon>
                 </Fab>

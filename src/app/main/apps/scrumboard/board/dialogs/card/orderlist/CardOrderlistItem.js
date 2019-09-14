@@ -4,7 +4,7 @@ import {useForm, useUpdateEffect} from '@fuse/hooks';
 
 function CardOrderlistItem(props)
 {
-    const {item, index, onOrderItemChange} = props;
+    const {item, index, onOrderItemChange, disabled} = props;
     const {form, handleChange, handleCustomChange} = useForm(item);
 
     useUpdateEffect(() => {
@@ -22,6 +22,7 @@ function CardOrderlistItem(props)
                 <Checkbox
                     checked={form.checked}
                     name="checked"
+                    disabled={disabled}
                     onChange={handleChange}
                     tabIndex={-1}
                 />
@@ -32,6 +33,7 @@ function CardOrderlistItem(props)
                     name="code"
                     margin="dense"
                     value={form.code}
+                    disabled={disabled}
                     onChange={handleChange}
                     variant="outlined"
                 />
@@ -42,6 +44,7 @@ function CardOrderlistItem(props)
                     name="name"
                     margin="dense"
                     value={form.name}
+                    disabled={disabled}
                     onChange={handleChange}
                     variant="outlined"
                 />
@@ -51,6 +54,7 @@ function CardOrderlistItem(props)
                     className="flex flex-1 mx-8"
                     name="qty"
                     margin="dense"
+                    disabled={disabled}
                     value={form.qty}
                     inputProps={{type: 'number', min: 0}}
                     onChange={handleCustomChange(e => parseInt(e.target.value))}
@@ -63,6 +67,7 @@ function CardOrderlistItem(props)
                     name="price"
                     margin="dense"
                     value={form.price}
+                    disabled={disabled}
                     inputProps={{type: 'number', min: 0}}
                     onChange={handleChange}
                     variant="outlined"
@@ -73,12 +78,17 @@ function CardOrderlistItem(props)
                     className="flex flex-1 mx-8"
                     name="tot"
                     margin="dense"
+                    disabled={disabled}
                     value={Math.round(form.price * form.qty * 100) / 100}
                     variant="outlined"
                 />
             </td>
             <td className={'text-center'}>
-                <IconButton aria-label="Delete" onClick={props.onOrderItemRemove}>
+                <IconButton
+                    aria-label="Delete"
+                    onClick={props.onOrderItemRemove}
+                    disabled={disabled}
+                >
                     <Icon>delete</Icon>
                 </IconButton>
             </td>

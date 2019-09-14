@@ -41,7 +41,7 @@ const useStyles = makeStyles({
 
 function CardOrderlist(props)
 {
-    const {onOrderListChange, orderlist} = props;
+    const {onOrderListChange, orderlist, disabled} = props;
     const [anchorEl, setAnchorEl] = useState(null);
     const {form, setForm, setInForm} = useForm(orderlist);
     const classes = useStyles();
@@ -95,6 +95,7 @@ function CardOrderlist(props)
                         onClick={handleMenuOpen}
                         variant="outlined"
                         size="small"
+                        disabled={disabled}
                     >
                         <Icon className="text-20">more_vert</Icon>
                     </IconButton>
@@ -132,11 +133,13 @@ function CardOrderlist(props)
                                 key={item.id}
                                 item={item}
                                 index={key}
+                                disabled={disabled}
                                 onOrderItemChange={handleOrderItemChange}
                                 onOrderItemRemove={() => handleOrderItemRemove(item.id)}
                             />
                         ))}
                         <CardAddOrderlistItem
+                            disabled={disabled}
                             onOrderItemAdd={handleOrderItemAdd}
                         />
                     </tbody>
