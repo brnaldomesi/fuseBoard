@@ -8,6 +8,7 @@ import reorder, {reorderQuoteMap} from './reorder';
 import * as Actions from './index';
 import ListModel from '../../model/ListModel';
 import CardModel from '../../model/CardModel';
+import { covert2ScrumboardCard } from './card.actions';
 
 export const GET_BOARD = '[SCRUMBOARD APP] GET BOARD';
 export const DELETE_BOARD = '[SCRUMBOARD APP] DELETE BOARD';
@@ -35,18 +36,7 @@ export function getBoard(params)
                 const board = _.get(response, 'data.boards[0]');
                 const labels = _.get(labelResponse, 'data.labels');
 
-                const fields = ['idMembers', 'idLabels', 'attachments', 'activities', 'idAttachmentCover'];
-                
-                board.cards.forEach(card => {
-                    fields.forEach(field => {
-                        card[field] = card.detail[field] ? card.detail[field] : [];
-                    });
-                    card['due'] = card['due_date'].slice(0, 10);
-                    card['orderlists'] = card.detail['orderlists']
-                    card['checklists'] = card.detail['checklists']
-                    card['idAttachmentCover'] = card.detail['idAttachmentCover'];
-                });
-
+                board.cards.forEach(card => card = covert2ScrumboardCard(card));
                 board.labels = labels;
                 
                 if (board) {

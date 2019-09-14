@@ -1,4 +1,5 @@
 import axios from 'axios';
+import _ from '@lodash';
 import {showMessage} from 'app/store/actions/fuse';
 
 export const OPEN_CARD_DIALOG = '[SCRUMBOARD APP] OPEN CARD DIALOG';
@@ -53,6 +54,23 @@ export function closeCardDialog(data, locked)
     }
 }
 
+export function covert2ScrumboardCard(card)
+{
+    const fields = ['idMembers', 'idLabels', 'attachments', 'activities', 'idAttachmentCover'];
+
+    if (card) {
+        fields.forEach(field => {
+            card[field] = card.detail[field] || [];
+        });
+        card['due'] = card['due_date'] ? card['due_date'].slice(0, 10) : '';
+        card['orderlists'] = card.detail['orderlists']
+        card['checklists'] = card.detail['checklists']
+        card['idAttachmentCover'] = card.detail['idAttachmentCover'];
+    }
+
+    return card;
+}
+
 export function updateCard(card)
 {
     return (dispatch) => {
@@ -91,11 +109,15 @@ export function updateCard(card)
                     }
                 }));
 
-                lockRequest(false, card, dispatch);
+                // const savedCard = _.get(response, 'data.card');
+                // const newCard = covert2ScrumboardCard(savedCard);
+                const newCard = card;
+
+                lockRequest(false, newCard, dispatch);
 
                 return dispatch({
                     type   : UPDATE_CARD,
-                    payload: card
+                    payload: newCard
                 });
             });
     }
