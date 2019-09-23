@@ -1,2 +1,5 @@
 fuse-base
 node_modules
+build
+build.tar.bz2
+
