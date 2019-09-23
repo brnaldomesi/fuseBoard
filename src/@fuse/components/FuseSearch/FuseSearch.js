@@ -1,14 +1,15 @@
+import {ClickAwayListener, Icon, IconButton, ListItemIcon, ListItemText, MenuItem, Paper, Popper, TextField, Tooltip, Typography} from '@material-ui/core';
 import React, {useEffect, useReducer, useRef} from 'react';
-import {Popper, ClickAwayListener, MenuItem, Icon, IconButton, ListItemIcon, ListItemText, Paper, TextField, Tooltip, Typography} from '@material-ui/core';
-import {makeStyles} from '@material-ui/styles';
-import {useSelector} from 'react-redux';
+
+import Autosuggest from 'react-autosuggest';
 import {FuseUtils} from '@fuse';
 import clsx from 'clsx';
+import deburr from 'lodash/deburr';
+import {makeStyles} from '@material-ui/styles';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
+import {useSelector} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import deburr from 'lodash/deburr';
-import Autosuggest from 'react-autosuggest';
 
 function renderInputComponent(inputProps)
 {
@@ -389,11 +390,11 @@ function FuseSearch(props)
             return (
                 <div className={clsx(classes.root, "flex", props.className)}>
 
-                    {/* <Tooltip title="Click to search" placement="bottom">
+                    <Tooltip title="Click to search" placement="bottom">
                         <div onClick={showSearch}>
                             {props.trigger}
                         </div>
-                    </Tooltip> */}
+                    </Tooltip>
 
                     {state.opened && (
                         <ClickAwayListener onClickAway={handleClickAway}>

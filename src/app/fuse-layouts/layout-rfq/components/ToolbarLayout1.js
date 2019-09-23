@@ -1,12 +1,17 @@
-import React from 'react';
 import {AppBar, Hidden, Toolbar} from '@material-ui/core';
-import {makeStyles, ThemeProvider} from '@material-ui/styles';
 import {FuseSearch, FuseShortcuts} from '@fuse';
-import clsx from 'clsx';
+import {ThemeProvider, makeStyles} from '@material-ui/styles';
+
 import NavbarMobileToggleButton from 'app/fuse-layouts/shared-components/NavbarMobileToggleButton';
-// import QuickPanelToggleButton from 'app/fuse-layouts/shared-components/quickPanel/QuickPanelToggleButton';
+import NotificationMenu from 'app/fuse-layouts/shared-components/NotificationMenu';
+import React from 'react';
 import UserMenu from 'app/fuse-layouts/shared-components/UserMenu';
+import clsx from 'clsx';
 import {useSelector} from 'react-redux';
+
+// import QuickPanelToggleButton from 'app/fuse-layouts/shared-components/quickPanel/QuickPanelToggleButton';
+
+
 
 const useStyles = makeStyles(theme => ({
     separator: {
@@ -51,11 +56,13 @@ function ToolbarLayout1(props)
 
                     <div className="flex">
 
+                        <NotificationMenu/>
+
                         <UserMenu/>
 
                         <div className={classes.separator}/>
 
-                        <FuseSearch/>
+                        {/* <FuseSearch/> */}
 
                         <Hidden lgUp>
 
