@@ -2,6 +2,8 @@ import axios from 'axios';
 
 export const GET_NEW_NOTIFICATIONS_COUNT = '[NOTIFICATION] GET NEW NOTIFICATIONS COUNT';
 export const GET_RECENT_NOTIFICATIONS = '[NOTIFICATION] GET RECENT NOTIFICATIONS';
+export const DELETE_NOTIFICATION = '[NOTIFICATION] DELETE NOTIFICATION';
+export const NOTIFICATION_REMOVED = '[NOTIFICATION] NOTIFICATION REMOVED';
 
 export function getNewNotificationsCount()
 {
@@ -16,13 +18,28 @@ export function getNewNotificationsCount()
     );
 }
 
+export function deleteNotification(id)
+{
+  const request = axios.post('/api/notification/del', {
+    _id: id
+  });
+
+  return (dispatch) =>
+    request.then((response) =>
+      dispatch({
+        type: DELETE_NOTIFICATION,
+        payload: id
+      })
+    );
+}
+
 export function getRecentNotifications()
 {
   const request = axios.post('/api/notification/list');
   const recentNotifications = [
     {
         'read' : false,
-        '_id'     : '1',
+        '_id'     : 1,
         'source'   : {
             'name'  : 'Alice',
             'lastname' : 'Freeman',
@@ -36,7 +53,7 @@ export function getRecentNotifications()
     },
     {
         'read' : false,
-        '_id'     : '2',
+        '_id'     : 2,
         'source'   : {
             'name'  : 'Alice1',
             'lastname' : 'Freeman',
@@ -50,7 +67,7 @@ export function getRecentNotifications()
     },
     {
         'read' : false,
-        '_id'     : '3',
+        '_id'     : 3,
         'source'   : {
             'name'  : 'Alice2',
             'lastname' : 'Freeman',
@@ -64,7 +81,7 @@ export function getRecentNotifications()
     },
     {
         'read' : false,
-        '_id'     : '4',
+        '_id'     : 4,
         'source'   : {
             'name'  : 'Alice3',
             'lastname' : 'Freeman',
@@ -78,7 +95,7 @@ export function getRecentNotifications()
     },
     {
         'read' : false,
-        '_id'     : '5',
+        '_id'     : 5,
         'source'   : {
             'name'  : 'Alice4',
             'lastname' : 'Freeman',

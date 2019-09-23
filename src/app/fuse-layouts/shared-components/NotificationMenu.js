@@ -5,18 +5,22 @@ import {shallowEqual, useDispatch, useSelector} from 'react-redux';
 
 import Avatar from '@material-ui/core/Avatar';
 import Badge from '@material-ui/core/Badge';
+import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import {Popover} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import Typography from '@material-ui/core/Typography';
-import { blockStatement } from '@babel/types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import reducer from 'app/main/apps/notification/store/reducers';
@@ -103,19 +107,40 @@ function NotificationMenu(props)
 {
   const classes = useStyles();
   const [notificationMenu, setNotificationMenu] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteNotificationId, setDeleteNotificationId] = useState(null);
   const dispatch = useDispatch();
   const newNotificationsCount = useSelector(({notification}) => notification.newNotificationsCount, shallowEqual);
+  //const newNotificationsCount = 6;
   const recentNotifications = useSelector(({notification}) => notification.recentNotifications, shallowEqual);
 
-  const notificationMenuClick = event => {
-    //if(newNotificationsCount > 0) {
+  const handleNotificationMenuClick = event => {
+    if(newNotificationsCount > 0) {
       setNotificationMenu(event.currentTarget);
-    //}
+    }
   };
+
+  const handleOpenNotification = id => {
+    
+  }
+
+  const handleDeleteNotification = id => {
+    setConfirmDelete(false);
+    dispatch(Actions.deleteNotification(id));
+  }
 
   const notificationMenuClose = () => {
     setNotificationMenu(null);
   };
+
+  const handleConfirmDelete = (id) => {
+    setConfirmDelete(true);
+    setDeleteNotificationId(id);
+  }
+
+  const handleConfirmDeleteClose = () => {
+    setConfirmDelete(false);
+  }
 
   useEffect(() => {
     dispatch(Actions.getNewNotificationsCount());
@@ -123,14 +148,18 @@ function NotificationMenu(props)
     const timer = setInterval(() => {
       dispatch(Actions.getNewNotificationsCount());
       dispatch(Actions.getRecentNotifications());
-    }, 10000);
+    }, 100000);
     return () => clearInterval(timer);
   }, [dispatch]);
   
   return (
     <React.Fragment>
-      <IconButton className={clsx('w-64 h-64', classes.notificationIcon)} color='inherit' onClick={notificationMenuClick}>
-        <Badge badgeContent={6} color='error'>
+      <IconButton 
+        className={clsx('w-64 h-64', classes.notificationIcon)} 
+        color='inherit' 
+        onClick={handleNotificationMenuClick}
+      >
+        <Badge badgeContent={newNotificationsCount} color='error'>
           <NotificationsIcon />
         </Badge>
       </IconButton>
@@ -155,18 +184,30 @@ function NotificationMenu(props)
             <SearchIcon className='spacingRight'/>
             <NotificationsIcon/>
           </ListItem>
-          <ListItem alignItems='flex-start' className='spaceBetween' divider={true}>
+          <ListItem 
+            alignItems='flex-start' 
+            className='spaceBetween' 
+            divider={true}
+          >
             <label>Notifications</label>
             <label>Mark all as read</label>
           </ListItem>
           
           { recentNotifications && recentNotifications.map((notification, key) => (
-            <ListItem key={key} className='notificationItem' alignItems='flex-start' divider={true}>
+            <ListItem 
+              key={key} 
+              className='notificationItem' 
+              alignItems='flex-start' 
+              divider={true}
+              onClick={ () => handleOpenNotification(notification._id) }
+            >
               <ListItemAvatar>
-                {!notification.read && (
-                  <div className='unreadBadge'></div>
-                )}
-                <Avatar alt='Remy Sharp' src={notification.source.avatar} />
+                <div>
+                  {!notification.read && (
+                    <div className='unreadBadge'></div>
+                  )}
+                  <Avatar alt='Remy Sharp' src={notification.source.avatar} />
+                </div>
               </ListItemAvatar>
               <ListItemText
                 primary={
@@ -186,18 +227,39 @@ function NotificationMenu(props)
                 <div>
                   { notification.time }
                 </div>
-                <DeleteIcon className='deleteIcon' />
+                <DeleteIcon className='deleteIcon' onClick={ () => handleConfirmDelete(notification._id) } />
               </div>
             </ListItem>
           ))}
 
-          { newNotificationsCount > -1 &&
+          { recentNotifications && newNotificationsCount > recentNotifications.length &&
             <ListItem alignItems='flex-start' className='contentCenter greenColor'>
               <label className='spacingTop'>SEE ALL NOTIFICATIONS</label>
             </ListItem>
           }
         </List>
       </Popover>
+      <Dialog
+        open={confirmDelete}
+        onClose={handleConfirmDeleteClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Delete Confirmation</DialogTitle>
+        <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+            Are you going to delete this notification?
+        </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+        <Button onClick={() => handleDeleteNotification(deleteNotificationId)}>
+          Yes
+        </Button>
+        <Button onClick={handleConfirmDeleteClose} autoFocus>
+          No
+        </Button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 }

@@ -1,7 +1,7 @@
 import {AppBar, Hidden, Toolbar} from '@material-ui/core';
-import {FuseSearch, FuseShortcuts} from '@fuse';
 import {ThemeProvider, makeStyles} from '@material-ui/styles';
 
+import { FuseShortcuts } from '@fuse';
 import NavbarMobileToggleButton from 'app/fuse-layouts/shared-components/NavbarMobileToggleButton';
 import NotificationMenu from 'app/fuse-layouts/shared-components/NotificationMenu';
 import React from 'react';
