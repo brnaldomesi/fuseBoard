@@ -34,6 +34,25 @@ const useStyles = makeStyles(theme => ({
   notificationList: {
     width: '360px',
     maxHeight: '480px',
+
+    '& .unreadBadge' : {
+      position       : 'absolute',
+      minWidth       : 18,
+      height         : 18,
+      top            : 4,
+      left           : 10,
+      borderRadius   : 9,
+      padding        : '0 5px',
+      fontSize       : 11,
+      textAlign      : 'center',
+      display        : 'flex',
+      alignItems     : 'center',
+      justifyContent : 'center',
+      backgroundColor: theme.palette.secondary.main,
+      color          : theme.palette.secondary.contrastText,
+      boxShadow      : '0 2px 2px 0 rgba(0, 0, 0, 0.35)',
+      zIndex         : 10
+    },
     
     '& .flexEnd': {
       justifyContent: 'flex-end'
@@ -104,7 +123,7 @@ function NotificationMenu(props)
     const timer = setInterval(() => {
       dispatch(Actions.getNewNotificationsCount());
       dispatch(Actions.getRecentNotifications());
-    }, 3000);
+    }, 10000);
     return () => clearInterval(timer);
   }, [dispatch]);
   
@@ -144,6 +163,9 @@ function NotificationMenu(props)
           { recentNotifications && recentNotifications.map((notification, key) => (
             <ListItem key={key} className='notificationItem' alignItems='flex-start' divider={true}>
               <ListItemAvatar>
+                {!notification.read && (
+                  <div className='unreadBadge'></div>
+                )}
                 <Avatar alt='Remy Sharp' src={notification.source.avatar} />
               </ListItemAvatar>
               <ListItemText

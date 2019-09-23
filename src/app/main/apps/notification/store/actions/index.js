@@ -21,7 +21,7 @@ export function getRecentNotifications()
   const request = axios.post('/api/notification/list');
   const recentNotifications = [
     {
-        'read' : 'false',
+        'read' : false,
         '_id'     : '1',
         'source'   : {
             'name'  : 'Alice',
@@ -35,7 +35,7 @@ export function getRecentNotifications()
         'time'   : '09:02'
     },
     {
-        'read' : 'false',
+        'read' : false,
         '_id'     : '2',
         'source'   : {
             'name'  : 'Alice1',
@@ -49,7 +49,7 @@ export function getRecentNotifications()
         'time'   : '09:02'
     },
     {
-        'read' : 'false',
+        'read' : false,
         '_id'     : '3',
         'source'   : {
             'name'  : 'Alice2',
@@ -63,7 +63,7 @@ export function getRecentNotifications()
         'time'   : '09:02'
     },
     {
-        'read' : 'false',
+        'read' : false,
         '_id'     : '4',
         'source'   : {
             'name'  : 'Alice3',
@@ -77,7 +77,7 @@ export function getRecentNotifications()
         'time'   : '09:02'
     },
     {
-        'read' : 'false',
+        'read' : false,
         '_id'     : '5',
         'source'   : {
             'name'  : 'Alice4',
