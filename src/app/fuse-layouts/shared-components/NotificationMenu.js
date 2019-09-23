@@ -108,6 +108,7 @@ function NotificationMenu(props)
   const classes = useStyles();
   const [notificationMenu, setNotificationMenu] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [openNotificationDialog, setOpenNotificationDialog] = useState(false);
   const [deleteNotificationId, setDeleteNotificationId] = useState(null);
   const dispatch = useDispatch();
   const newNotificationsCount = useSelector(({notification}) => notification.newNotificationsCount, shallowEqual);
@@ -120,12 +121,22 @@ function NotificationMenu(props)
     }
   };
 
-  const handleOpenNotification = id => {
+  const handleOpenNotificationDialog = id => {
+    setOpenNotificationDialog(true);
+    setDeleteNotificationId(id);
+  }
+
+  const handleOpenNotificationDialogClose = id => {
+    setOpenNotificationDialog(false);
+  }
+
+  const handleOpenNotification = () => {
     
   }
 
   const handleDeleteNotification = id => {
     setConfirmDelete(false);
+    setOpenNotificationDialog(false);
     dispatch(Actions.deleteNotification(id));
   }
 
@@ -199,7 +210,7 @@ function NotificationMenu(props)
               className='notificationItem' 
               alignItems='flex-start' 
               divider={true}
-              onClick={ () => handleOpenNotification(notification._id) }
+              onClick={ () => handleOpenNotificationDialog(notification._id) }
             >
               <ListItemAvatar>
                 <div>
@@ -258,6 +269,32 @@ function NotificationMenu(props)
         <Button onClick={handleConfirmDeleteClose} autoFocus>
           No
         </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openNotificationDialog}
+        onClose={handleOpenNotificationDialogClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Let Google help apps determine location. This means sending anonymous location data to
+            Google, even when no apps are running.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus>
+            Go
+          </Button>
+          <Button onClick={handleOpenNotificationDialogClose}>
+            Close
+          </Button>
+          <Button onClick={ () => handleConfirmDelete(deleteNotificationId) }>
+            Remove
+          </Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
