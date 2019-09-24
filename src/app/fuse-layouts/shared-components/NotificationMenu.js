@@ -1,4 +1,5 @@
-import * as Actions from 'app/main/apps/notification/store/actions'
+import * as BoardActions from 'app/main/apps/scrumboard/store/actions';
+import * as NotificationActions from 'app/main/apps/notification/store/actions'
 
 import React, {useEffect, useState} from 'react';
 import {shallowEqual, useDispatch, useSelector} from 'react-redux';
@@ -21,8 +22,9 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import {Popover} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import Typography from '@material-ui/core/Typography';
+import _ from '@lodash';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import reducer from 'app/main/apps/notification/store/reducers';
 import withReducer from 'app/store/withReducer';
 
@@ -109,11 +111,11 @@ function NotificationMenu(props)
   const [notificationMenu, setNotificationMenu] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [openNotificationDialog, setOpenNotificationDialog] = useState(false);
-  const [deleteNotificationId, setDeleteNotificationId] = useState(null);
+  const [notificationId, setNotificationId] = useState(null);
   const dispatch = useDispatch();
   const newNotificationsCount = useSelector(({notification}) => notification.newNotificationsCount, shallowEqual);
-  //const newNotificationsCount = 6;
   const recentNotifications = useSelector(({notification}) => notification.recentNotifications, shallowEqual);
+  const board = useSelector(({scrumboardApp}) => scrumboardApp && scrumboardApp.board);
 
   const handleNotificationMenuClick = event => {
     if(newNotificationsCount > 0) {
@@ -121,33 +123,40 @@ function NotificationMenu(props)
     }
   };
 
-  const handleOpenNotificationDialog = id => {
+  const handleOpenNotificationDialog = notificationId => () => {
     setOpenNotificationDialog(true);
-    setDeleteNotificationId(id);
+    setNotificationId(notificationId);
   }
 
-  const handleOpenNotificationDialogClose = id => {
+  const handleOpenNotificationDialogClose = () => {
     setOpenNotificationDialog(false);
   }
 
-  const handleOpenNotification = () => {
-    
+  const handleOpenNotification = notificationId => () => {
+    handleOpenNotificationDialogClose();
+    notificationMenuClose();
+    const getNotification = NotificationActions.getNotification(notificationId);
+    getNotification.then(response => {
+      //const card = _.find(board.cards, {id: response.id_obj});
+      const card = _.find(board.cards, {id: '5d7bdfd1622cbf0d9f2f23c6'});
+      dispatch(BoardActions.openCardDialog(card));
+    })
   }
 
-  const handleDeleteNotification = id => {
-    setConfirmDelete(false);
-    setOpenNotificationDialog(false);
-    dispatch(Actions.deleteNotification(id));
+  const handleDeleteNotification = notificationId => () => {
+    handleConfirmDeleteClose();
+    handleOpenNotificationDialogClose();
+    dispatch(NotificationActions.deleteNotification(notificationId));
   }
 
   const notificationMenuClose = () => {
     setNotificationMenu(null);
   };
 
-  const handleConfirmDelete = id => e => {
+  const handleConfirmDelete = notificationId => e => {
     e.stopPropagation();
     setConfirmDelete(true);
-    setDeleteNotificationId(id);
+    setNotificationId(notificationId);
   }
 
   const handleConfirmDeleteClose = () => {
@@ -155,12 +164,12 @@ function NotificationMenu(props)
   }
 
   useEffect(() => {
-    dispatch(Actions.getNewNotificationsCount());
-    dispatch(Actions.getRecentNotifications());
+    dispatch(NotificationActions.getNewNotificationsCount());
+    dispatch(NotificationActions.getRecentNotifications());
     const timer = setInterval(() => {
-      dispatch(Actions.getNewNotificationsCount());
-      dispatch(Actions.getRecentNotifications());
-    }, 100000);
+      dispatch(NotificationActions.getNewNotificationsCount());
+      dispatch(NotificationActions.getRecentNotifications());
+    }, 10000);
     return () => clearInterval(timer);
   }, [dispatch]);
   
@@ -205,13 +214,13 @@ function NotificationMenu(props)
             <label>Mark all as read</label>
           </ListItem>
           
-          { recentNotifications && recentNotifications.map((notification, key) => (
+          {recentNotifications && recentNotifications.map((notification, key) => (
             <ListItem 
               key={key} 
               className='notificationItem' 
               alignItems='flex-start' 
               divider={true}
-              onClick={ () => handleOpenNotificationDialog(notification._id) }
+              onClick={handleOpenNotificationDialog(notification._id)}
             >
               <ListItemAvatar>
                 <div>
@@ -229,22 +238,22 @@ function NotificationMenu(props)
                       variant='body2'
                       className={clsx('greenColor', classes.inline)}
                     >
-                      { notification.source.name + ' ' + notification.source.lastname + ' ' }
+                      {notification.source.name + ' ' + notification.source.lastname + ' '}
                     </Typography>
-                    { notification.description }
+                    {notification.description}
                   </React.Fragment>
                 }
               />
               <div>
                 <div>
-                  { notification.time }
+                  {notification.time}
                 </div>
-                <DeleteIcon className='deleteIcon' onClick={ handleConfirmDelete(notification._id) } />
+                <DeleteIcon className='deleteIcon' onClick={handleConfirmDelete(notification._id)} />
               </div>
             </ListItem>
           ))}
 
-          { recentNotifications && newNotificationsCount > recentNotifications.length &&
+          {recentNotifications && newNotificationsCount > recentNotifications.length &&
             <ListItem alignItems='flex-start' className='contentCenter greenColor'>
               <label className='spacingTop'>SEE ALL NOTIFICATIONS</label>
             </ListItem>
@@ -264,7 +273,7 @@ function NotificationMenu(props)
         </DialogContentText>
         </DialogContent>
         <DialogActions>
-        <Button onClick={() => handleDeleteNotification(deleteNotificationId)}>
+        <Button onClick={handleDeleteNotification(notificationId)}>
           Yes
         </Button>
         <Button onClick={handleConfirmDeleteClose} autoFocus>
@@ -279,21 +288,20 @@ function NotificationMenu(props)
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Open notification?"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending anonymous location data to
-            Google, even when no apps are running.
+            To open notification please click GO button
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus>
+          <Button onClick={handleOpenNotification(notificationId)} autoFocus>
             Go
           </Button>
           <Button onClick={handleOpenNotificationDialogClose}>
             Close
           </Button>
-          <Button onClick={ handleConfirmDelete(deleteNotificationId) }>
+          <Button onClick={handleConfirmDelete(notificationId)}>
             Remove
           </Button>
         </DialogActions>

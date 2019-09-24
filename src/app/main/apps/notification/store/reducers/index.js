@@ -9,8 +9,7 @@ const notificationReducer = function (state = initialState, action) {
     {
       return {
         ...state,
-        //newNotificationsCount: action.payload.count      
-        newNotificationsCount: 6      
+        newNotificationsCount: action.payload.count
       };
     }
     case Actions.GET_RECENT_NOTIFICATIONS:
@@ -19,11 +18,10 @@ const notificationReducer = function (state = initialState, action) {
         recentNotifications: action.payload
       }
     case Actions.DELETE_NOTIFICATION:
-      const unread = !state.recentNotifications.filter( ({ _id }) => _id === action.payload).read
-      console.log('dd', state.newNotificationsCount)
+      const unread = !state.recentNotifications.filter(({_id}) => _id === action.payload).read
       return {
         ...state,
-        recentNotifications: state.recentNotifications.filter( ({ _id }) => _id !== action.payload),
+        recentNotifications: state.recentNotifications.filter(({_id}) => _id !== action.payload),
         newNotificationsCount: unread ? state.newNotificationsCount-1 : state.newNotificationsCount
       }
     default:
