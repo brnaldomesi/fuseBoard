@@ -144,7 +144,8 @@ function NotificationMenu(props)
     setNotificationMenu(null);
   };
 
-  const handleConfirmDelete = (id) => {
+  const handleConfirmDelete = id => e => {
+    e.stopPropagation();
     setConfirmDelete(true);
     setDeleteNotificationId(id);
   }
@@ -238,7 +239,7 @@ function NotificationMenu(props)
                 <div>
                   { notification.time }
                 </div>
-                <DeleteIcon className='deleteIcon' onClick={ () => handleConfirmDelete(notification._id) } />
+                <DeleteIcon className='deleteIcon' onClick={ handleConfirmDelete(notification._id) } />
               </div>
             </ListItem>
           ))}
@@ -292,7 +293,7 @@ function NotificationMenu(props)
           <Button onClick={handleOpenNotificationDialogClose}>
             Close
           </Button>
-          <Button onClick={ () => handleConfirmDelete(deleteNotificationId) }>
+          <Button onClick={ handleConfirmDelete(deleteNotificationId) }>
             Remove
           </Button>
         </DialogActions>
