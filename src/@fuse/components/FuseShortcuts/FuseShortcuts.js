@@ -1,20 +1,21 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Divider, Icon, IconButton, Input, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip, Typography} from '@material-ui/core';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import InputLabel from '@material-ui/core/InputLabel';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import axios from 'axios';
-
-import {makeStyles} from '@material-ui/styles';
 import * as UserActions from 'app/auth/store/actions';
+
+import {Divider, Icon, IconButton, Input, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip, Typography} from '@material-ui/core';
+import {FuseAnimateGroup, FuseUtils} from '@fuse';
+import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {FuseUtils, FuseAnimateGroup} from '@fuse';
-import _ from 'lodash';
+
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 import {Link} from 'react-router-dom';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
+import _ from 'lodash';
 import amber from '@material-ui/core/colors/amber';
+import axios from 'axios';
 import clsx from 'clsx';
+import {makeStyles} from '@material-ui/styles';
 
 const useStyles = makeStyles({
     root   : {
@@ -211,6 +212,10 @@ function FuseShortcuts(props)
                 </IconButton>
                 
                 {filterType.map(type => (
+                  <div>
+                    <InputLabel shrink htmlFor="age-label-placeholder">
+                      {type}
+                    </InputLabel>
                     <Select
                         key={type}
                         value={filterSelected[type]}
@@ -235,6 +240,7 @@ function FuseShortcuts(props)
                             </MenuItem>
                         ))}
                     </Select>
+                  </div>
                 ))}
 
                 {/* <Tooltip title="Click to add/remove shortcut" placement={props.variant === "horizontal" ? "bottom" : "left"}>

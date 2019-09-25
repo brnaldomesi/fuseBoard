@@ -20,7 +20,6 @@ import DueMenu from './toolbar/DueMenu';
 import {FuseChipSelect} from '@fuse';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import {KeyboardDatePicker} from "@material-ui/pickers";
 import LabelModel from 'app/main/apps/scrumboard/model/LabelModel';
 import LabelsMenu from './toolbar/LabelsMenu';
@@ -33,6 +32,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import _ from '@lodash';
+import clsx from 'clsx';
 import { getUserId } from 'app/auth';
 import { makeStyles } from '@material-ui/styles';
 import moment from 'moment';
@@ -46,6 +46,10 @@ const useStyles = makeStyles(theme => ({
         '& .MuiFormHelperText-root': {
             display: 'none'
         }
+    },
+    readAllEdit: {
+      right: theme.spacing(1),
+      bottom: theme.spacing(1)
     }
 }));
 
@@ -364,6 +368,10 @@ function BoardCardForm(props)
                                     cardId={cardForm.id}
                                     onUpload={handleAttachUpload}
                                 />
+                                
+                                <IconButton color="inherit">
+                                  <Icon>access_time</Icon>
+                                </IconButton>
 
                                 <CheckListMenu
                                     checklistAdded={!!cardForm.checklists}
@@ -377,6 +385,12 @@ function BoardCardForm(props)
 
                             </div>
                         )}
+                        <IconButton color="inherit">
+                            <Icon>remove_red_eye</Icon>
+                        </IconButton>
+                        <IconButton color="inherit">
+                            <Icon>info</Icon>
+                        </IconButton>
                         <IconButton color="inherit" onClick={ev => dispatch(Actions.closeCardDialog(card, locked))}>
                             <Icon>close</Icon>
                         </IconButton>
@@ -397,6 +411,8 @@ function BoardCardForm(props)
                             )
                         }, [board, card])}
                     </div>
+                    
+                    <Button variant='contained'>Assign to ...</Button>
 
                     {cardForm.due && (
                         <KeyboardDatePicker
@@ -440,7 +456,7 @@ function BoardCardForm(props)
                     />
                 </div>
 
-                <div className="w-full mb-24">
+                <div className="w-full mb-24 relative">
                     <TextField
                         label="Description"
                         name="description"
@@ -451,7 +467,9 @@ function BoardCardForm(props)
                         disabled={locked}
                         variant="outlined"
                         fullWidth
-                    />
+                    >
+                    </TextField>
+                    <Button variant='contained' className={clsx('absolute', classes.readAllEdit)}>Read All / Edit</Button>
                 </div>
 
                 <div className="flex flex-col sm:flex-row">
@@ -527,12 +545,13 @@ function BoardCardForm(props)
                                 }}
                                 options={board.members.map((member) => ({
                                     value: member.id,
-                                    label: (
+                                    /* label: (
                                         <span className="flex items-center">
                                             <Avatar className="w-32 h-32 mr-8" src={member.avatar}/>
                                             {member.name}
                                         </span>
-                                    )
+                                    ) */
+                                    label: member.name
                                 }))}
                                 variant="fixed"
                             />
