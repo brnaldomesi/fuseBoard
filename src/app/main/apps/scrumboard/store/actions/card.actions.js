@@ -1,5 +1,5 @@
-import axios from 'axios';
 import _ from '@lodash';
+import axios from 'axios';
 import {showMessage} from 'app/store/actions/fuse';
 
 export const OPEN_CARD_DIALOG = '[SCRUMBOARD APP] OPEN CARD DIALOG';
@@ -71,7 +71,7 @@ export function covert2ScrumboardCard(card)
     return card;
 }
 
-export function updateCard(card)
+export function updateCard(card, changes)
 {
     return (dispatch) => {
         const detail = {};
@@ -91,7 +91,8 @@ export function updateCard(card)
             title: card.name,
             description: card.description,
             due_date: card.due,
-            detail
+            detail,
+            changes
         });
 
         dispatch({

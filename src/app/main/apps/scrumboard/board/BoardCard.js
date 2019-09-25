@@ -1,14 +1,15 @@
-import React from 'react';
-import {Card, Typography, Avatar, Icon, Tooltip, Box} from '@material-ui/core';
-import {Draggable} from 'react-beautiful-dnd';
-import clsx from 'clsx';
-import moment from 'moment';
-import _ from '@lodash';
 import * as Actions from '../store/actions';
-import {makeStyles} from '@material-ui/styles';
-import {useDispatch, useSelector} from 'react-redux';
-import { getUserId } from 'app/auth';
 
+import {Avatar, Box, Card, Icon, Tooltip, Typography} from '@material-ui/core';
+import {useDispatch, useSelector} from 'react-redux';
+
+import {Draggable} from 'react-beautiful-dnd';
+import React from 'react';
+import _ from '@lodash';
+import clsx from 'clsx';
+import { getUserId } from 'app/auth';
+import {makeStyles} from '@material-ui/styles';
+import moment from 'moment';
 
 const useStyles = makeStyles(theme => ({
     card: {
