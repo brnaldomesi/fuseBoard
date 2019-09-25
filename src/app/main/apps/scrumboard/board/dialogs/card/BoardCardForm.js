@@ -1,44 +1,41 @@
-import React, {useCallback} from 'react';
+import * as Actions from 'app/main/apps/scrumboard/store/actions/index';
 
-import InputAdornment from '@material-ui/core/InputAdornment';
+import React, {useCallback} from 'react';
+import {useDebounce, useForm} from '@fuse/hooks';
+import {useDispatch, useSelector} from 'react-redux';
+
+import AppBar from '@material-ui/core/AppBar';
+import AttachmentMenu from './toolbar/AttachmentMenu';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import CardActivity from './activity/CardActivity';
+import CardAttachment from './attachment/CardAttachment';
+import CardChecklist from './checklist/CardChecklist';
+import CardComment from './comment/CardComment';
+import CardOrderlist from './orderlist/CardOrderlist';
+import CheckListMenu from './toolbar/CheckListMenu';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DueMenu from './toolbar/DueMenu';
+import {FuseChipSelect} from '@fuse';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
-import Tooltip from '@material-ui/core/Tooltip';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import AppBar from '@material-ui/core/AppBar';
-import Avatar from '@material-ui/core/Avatar';
-import TextField from '@material-ui/core/TextField';
-import List from '@material-ui/core/List';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import {KeyboardDatePicker} from "@material-ui/pickers";
-import { makeStyles } from '@material-ui/styles';
-
-import {FuseChipSelect} from '@fuse';
-import {useForm, useDebounce} from '@fuse/hooks';
-import _ from '@lodash';
-import moment from 'moment';
-import {useDispatch, useSelector} from 'react-redux';
-import * as Actions from 'app/main/apps/scrumboard/store/actions/index';
 import LabelModel from 'app/main/apps/scrumboard/model/LabelModel';
-import CardAttachment from './attachment/CardAttachment';
-import DueMenu from './toolbar/DueMenu';
 import LabelsMenu from './toolbar/LabelsMenu';
+import List from '@material-ui/core/List';
 import MembersMenu from './toolbar/MembersMenu';
-import OrderListMenu from './toolbar/OrderListMenu';
-import AttachmentMenu from './toolbar/AttachmentMenu';
-import CheckListMenu from './toolbar/CheckListMenu';
 import OptionsMenu from './toolbar/OptionsMenu';
-import CardOrderlist from './orderlist/CardOrderlist';
-import CardChecklist from './checklist/CardChecklist';
-import CardActivity from './activity/CardActivity';
-import CardComment from './comment/CardComment';
-
+import OrderListMenu from './toolbar/OrderListMenu';
+import TextField from '@material-ui/core/TextField';
+import Toolbar from '@material-ui/core/Toolbar';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import _ from '@lodash';
 import { getUserId } from 'app/auth';
-
-
+import { makeStyles } from '@material-ui/styles';
+import moment from 'moment';
 
 const useStyles = makeStyles(theme => ({
     saveButton: {
@@ -60,12 +57,148 @@ function BoardCardForm(props)
     const locked = card && card.lock && card.lock._id && card.lock._id !== getUserId();
 
     const {form: cardForm, handleChange, setForm, setInForm} = useForm(card);
-    const updateCard = useDebounce(newCard => {
-        dispatch(Actions.updateCard({...newCard}));
+    const updateCard = useDebounce( (card, changes) => {
+        dispatch(Actions.updateCard({...card}), changes);
     }, 0);
 
     const dueDate = cardForm && cardForm.due ? moment(cardForm.due).toDate() : null;
     const classes = useStyles();
+
+    function difference(oldCard, newCard) {
+      const changes = {};
+      if(oldCard.name !== newCard.name) {
+        changes.title = newCard.name
+      }
+      if(oldCard.due !== newCard.due) {
+        changes.due_date = newCard.due
+      }
+      if(oldCard.description !== newCard.description) {
+        changes.description = newCard.description
+      }
+      if(JSON.stringify(oldCard.idMembers) !== JSON.stringify(newCard.idMembers)) {
+        changes.members = [];
+        oldCard.idMembers.forEach(idMember => {
+          if(!newCard.idMembers.includes(idMember)) {
+            const selectedMember = _.find(board.members, {id: idMember});
+            const removedMember = {
+              id: idMember,
+              name: selectedMember.name,
+              action: 'remove'
+            }
+            changes.members.push(removedMember)
+          }
+        })
+        newCard.idMembers.forEach(idMember => {
+          if(!oldCard.idMembers.includes(idMember)) {
+            const selectedMember = _.find(board.members, {id: idMember});
+            const addedMember = {
+              id: idMember,
+              name: selectedMember.name,
+              action: 'add'
+            }
+            changes.members.push(addedMember)
+          }
+        })
+      }
+      if(JSON.stringify(oldCard.idLabels) !== JSON.stringify(newCard.idLabels)) {
+        changes.labels = [];
+        oldCard.idLabels.forEach(idLabel => {
+          if(!newCard.idLabels.includes(idLabel)) {
+            const selectedLabel = _.find(board.labels, {id: idLabel});
+            const removedLabel = {
+              id: idLabel,
+              name: selectedLabel.name,
+              action: 'remove'
+            }
+            changes.labels.push(removedLabel)
+          }
+        })
+        newCard.idLabels.forEach(idLabel => {
+          if(!oldCard.idLabels.includes(idLabel)) {
+            const selectedLabel = _.find(board.labels, {id: idLabel});
+            const addedLabel = {
+              id: idLabel,
+              name: selectedLabel.name,
+              action: 'add'
+            }
+            changes.labels.push(addedLabel)
+          }
+        })
+      }
+      if(JSON.stringify(oldCard.attachments) !== JSON.stringify(newCard.attachments)) {
+        changes.attachments = [];
+        oldCard.attachments.forEach(attachment => {
+          if(!newCard.attachments.includes(attachment)) {
+            const removedAttachment = {
+              id: attachment.id,
+              name: attachment.name,
+              action: 'remove'
+            }
+            changes.attachments.push(removedAttachment)
+          }
+        })
+        newCard.attachments.forEach(attachment => {
+          if(!oldCard.attachments.includes(attachment)) {
+            const addedAttachment = {
+              id: attachment.id,
+              name: attachment.name,
+              action: 'add'
+            }
+            changes.attachments.push(addedAttachment)
+          }
+        })
+      }
+      if(JSON.stringify(oldCard.activities) !== JSON.stringify(newCard.activities)) {
+        changes.activities = [];
+        oldCard.activities.forEach(activity => {
+          if(!newCard.activities.includes(activity)) {
+            const removedActivity = {
+              id: activity.id,
+              name: activity.message,
+              action: 'remove'
+            }
+            changes.activities.push(removedActivity)
+          }
+        })
+        newCard.activities.forEach(activity => {
+          if(!oldCard.activities.includes(activity)) {
+            const addedActivity = {
+              id: activity.id,
+              name: activity.message,
+              action: 'add'
+            }
+            changes.activities.push(addedActivity)
+          }
+        })
+      }
+      if(oldCard.orderlists) {
+        if(JSON.stringify(oldCard.orderlists) !== JSON.stringify(newCard.orderlists)) {
+          changes.orders = [];
+          oldCard.orderlists.forEach(order => {
+            if(!newCard.orderlists.includes(order)) {
+              const removedOrder = {
+                id: order.id,
+                name: order.name,
+                action: 'remove'
+              }
+              changes.orders.push(removedOrder)
+            }
+          })
+          newCard.orderlists.forEach(order => {
+            if(!oldCard.orderlists.includes(order)) {
+              const addedOrder = {
+                id: order.id,
+                name: order.name,
+                action: 'add'
+              }
+              changes.orders.push(addedOrder)
+            }
+          })
+        }
+      }
+      
+      return changes;
+    }
 
     function handleSaveClick()
     {
@@ -76,8 +209,8 @@ function BoardCardForm(props)
         const due = dueDate ? dueDate.toISOString().slice(0, 10) : ""
         const e = { target: { name: 'due', type: 'date', value: due } };
         handleChange(e);
-
-        updateCard(cardForm);
+        const changes = difference(card, cardForm)
+        updateCard(cardForm, changes);
     }
 
     function removeDue()

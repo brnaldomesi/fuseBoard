@@ -1,14 +1,16 @@
-import axios from 'axios';
-import {FuseUtils} from '@fuse';
-import history from '@history';
-import _ from '@lodash';
-import { getUserId } from 'app/auth';
-import {showMessage} from 'app/store/actions/fuse';
-import reorder, {reorderQuoteMap} from './reorder';
 import * as Actions from './index';
-import ListModel from '../../model/ListModel';
+
+import reorder, {reorderQuoteMap} from './reorder';
+
 import CardModel from '../../model/CardModel';
+import {FuseUtils} from '@fuse';
+import ListModel from '../../model/ListModel';
+import _ from '@lodash';
+import axios from 'axios';
 import { covert2ScrumboardCard } from './card.actions';
+import { getUserId } from 'app/auth';
+import history from '@history';
+import {showMessage} from 'app/store/actions/fuse';
 
 export const GET_BOARD = '[SCRUMBOARD APP] GET BOARD';
 export const DELETE_BOARD = '[SCRUMBOARD APP] DELETE BOARD';
@@ -121,12 +123,10 @@ export function reorderCard(result)
 
         const cardId = result.draggableId;
         const targetState = result.destination.droppableId;
-        const cardOrder = _.find(ordered, { id: targetState }).idCards;
-
-        const request = axios.post('/api/card/add', {
+        
+        const request = axios.post('/api/card/change_state', {
             id_card: cardId,
-            state: targetState,
-            card_order: cardOrder
+            state: targetState
         });
 
         request.then((response) => {
@@ -138,6 +138,13 @@ export function reorderCard(result)
                     horizontal: 'right'
                 }
             }));
+            
+            axios.post('/api/card/add', {
+                id_card: cardId,
+                changes: {
+                  state: targetState
+                }
+            });
         });
 
         return dispatch({

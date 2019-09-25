@@ -101,6 +101,12 @@ const useStyles = makeStyles(theme => ({
           }
         }
       }
+    },
+    
+    '& .bellIcon': {
+      '&:hover': {
+        cursor: 'pointer'
+      }
     }
   },
 }));
@@ -137,8 +143,7 @@ function NotificationMenu(props)
     notificationMenuClose();
     const getNotification = NotificationActions.getNotification(notificationId);
     getNotification.then(response => {
-      //const card = _.find(board.cards, {id: response.id_obj});
-      const card = _.find(board.cards, {id: '5d7bdfd1622cbf0d9f2f23c6'});
+      const card = _.find(board.cards, {id: response.data.notification.id_obj});
       dispatch(BoardActions.openCardDialog(card));
     })
   }
@@ -163,13 +168,16 @@ function NotificationMenu(props)
     setConfirmDelete(false);
   }
 
+  const getRecentNotifications = () => {
+    dispatch(NotificationActions.getRecentNotifications());
+  }
+
   useEffect(() => {
     dispatch(NotificationActions.getNewNotificationsCount());
     dispatch(NotificationActions.getRecentNotifications());
     const timer = setInterval(() => {
       dispatch(NotificationActions.getNewNotificationsCount());
-      dispatch(NotificationActions.getRecentNotifications());
-    }, 10000);
+    }, 100000);
     return () => clearInterval(timer);
   }, [dispatch]);
   
@@ -203,7 +211,7 @@ function NotificationMenu(props)
         <List className={classes.notificationList}>
           <ListItem alignItems='flex-start' className='flexEnd'>
             <SearchIcon className='spacingRight'/>
-            <NotificationsIcon/>
+            <NotificationsIcon onClick={getRecentNotifications} className='bellIcon' />
           </ListItem>
           <ListItem 
             alignItems='flex-start' 
