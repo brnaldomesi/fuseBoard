@@ -62,7 +62,7 @@ function BoardCardForm(props)
 
     const {form: cardForm, handleChange, setForm, setInForm} = useForm(card);
     const updateCard = useDebounce( (card, changes) => {
-        dispatch(Actions.updateCard({...card}), changes);
+        dispatch(Actions.updateCard({...card}, changes));
     }, 0);
 
     const dueDate = cardForm && cardForm.due ? moment(cardForm.due).toDate() : null;

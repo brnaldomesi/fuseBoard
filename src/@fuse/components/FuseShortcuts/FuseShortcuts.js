@@ -212,7 +212,7 @@ function FuseShortcuts(props)
                 </IconButton>
                 
                 {filterType.map(type => (
-                  <div>
+                  <div key={type}>
                     <InputLabel shrink htmlFor="age-label-placeholder">
                       {type}
                     </InputLabel>

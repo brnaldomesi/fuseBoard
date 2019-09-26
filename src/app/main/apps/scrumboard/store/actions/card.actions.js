@@ -85,7 +85,6 @@ export function updateCard(card, changes)
 
         detail['orderlists'] = card['orderlists']
         detail['checklists'] = card['checklists']
-
         const request = axios.post('/api/card/add', {
             id_card: card.id,
             title: card.name,
